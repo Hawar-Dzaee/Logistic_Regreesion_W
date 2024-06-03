@@ -111,4 +111,6 @@ with container:
     with col1:
         figure_1 = generate_plot(w_val)
         st.plotly_chart(figure_1, use_container_width=True, aspect_ratio=5.0)  # Change aspect ratio to 1.0
-        st.latex(r'''\hat{y} = wX + b''')
+        st.latex(r'''\sigma = \frac{1}{1 + e^{-(\color{green}w\color{black}X)}}''')
+        st.latex(fr'''\sigma = \frac{{1}}{{1 + e^{{-(\color{{green}}{{{w_val}}}\color{{black}}X)}}}}''')
+  
