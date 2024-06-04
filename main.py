@@ -1,4 +1,5 @@
 import torch 
+import torch.nn as nn 
 import streamlit as st
 import numpy as np 
 import plotly.graph_objects as go 
@@ -21,10 +22,11 @@ X = torch.cat((x1,x2),dim=0)
 
 y = torch.cat( (torch.zeros(len(x1)),torch.ones(len(x2))), dim = 0)
 
-colors = ['yellow' if i>0 else 'purple' for i in y]
+colors = ['orange' if i>0 else 'purple' for i in y]
 
 
 # --------------------------------
+# Generating Data 
 
 def generate_plot(w):
 
@@ -76,11 +78,71 @@ def generate_plot(w):
   figure = go.Figure(data=[scatter, non_linear_line ],layout=layout)
 
   return figure
+# ------------------------------------------------------
+# Calculating Loss Function Landscape 
+possible_weights = torch.linspace(-5,25,100)
+L= []
+loss_fn = nn.BCEWithLogitsLoss()
+
+for w in possible_weights:
+  z = w * X
+  loss = loss_fn(z,y)
+  L.append(loss)
+
+L = torch.as_tensor(L)
+secret_weight = possible_weights[torch.argmin(L)]
 
 
+# ------------------------------------------------------
+# Ploting Loss function Landscape
+
+def loss_landscape(w):
+
+    loss_landscape = go.Scatter(
+            x = possible_weights,
+            y = L,
+            mode = 'lines',
+            line = dict(color='pink'),
+            name ='Loss function landscape'
+        )
+
+    Global_minima = go.Scatter(
+        x = (secret_weight,),
+        y = (torch.min(L),),
+        mode = 'markers',
+        marker = dict(color='yellow',size=10,symbol='diamond'),
+        name = 'Global minima'
+    )
+
+    z = w*X
+    loss = loss_fn(z,y)
+
+    ball = go.Scatter(
+    x = (w,),
+    y = (loss,),
+    mode = 'markers',
+    marker= dict(color='red'),
+    name = 'loss'
+    )
+
+    layout = go.Layout(
+            xaxis = dict(title='w',
+                         range = [-8,25],
+                         zeroline = True,
+                        zerolinewidth = 2,
+                        zerolinecolor = 'rgba(205, 200, 193, 0.7)'),
+
+            yaxis = dict(title='L',
+                         range=[0,1.6],
+                        zeroline = True,
+                        zerolinewidth = 2,
+                        zerolinecolor = 'rgba(205, 200, 193, 0.7)')
+        )
 
 
-
+    figure = go.Figure(data = [loss_landscape,Global_minima,ball],layout=layout)
+    
+    return figure
 
 # ------------------------------------------------------
 #streamlit 
@@ -94,7 +156,7 @@ st.write('By : Hawar Dzaee')
 
 with st.sidebar:
     st.subheader("Adjust the parameters to minimize the loss")
-    w_val = st.slider("weight (w):", min_value=-4.0, max_value=4.0, step=0.1, value= -3.5)
+    w_val = st.slider("weight (w):", min_value=-4.0, max_value=18.0, step=0.1, value= -3.5)
 
 
 container = st.container()
@@ -113,4 +175,9 @@ with container:
         st.plotly_chart(figure_1, use_container_width=True, aspect_ratio=5.0)  # Change aspect ratio to 1.0
         st.latex(r'''\sigma = \frac{1}{1 + e^{-(\color{green}w\color{black}X)}}''')
         st.latex(fr'''\sigma = \frac{{1}}{{1 + e^{{-(\color{{green}}{{{w_val}}}\color{{black}}X)}}}}''')
+
+
+    with col2:
+       figure_2 = loss_landscape(w_val)
+       st.plotly_chart(figure_2,use_container_width=True)
   
