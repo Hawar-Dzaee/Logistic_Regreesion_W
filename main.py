@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 # --------------------------------
 
 lower_0,upper_0 = -1,0
-sample_size_0=5
+sample_size_0= 6
 noise_0=0.25
 
 lower_1,upper_1 = 0,1
@@ -16,11 +16,11 @@ noise_1 = 0.25
 
 secret_weight = torch.tensor(5.0)
 
-x1 = torch.linspace(lower_0,upper_0,sample_size_0) + torch.tensor([noise_0])
-x2 = torch.linspace(lower_1,upper_1,sample_size_1) - torch.tensor([noise_1])
-X = torch.cat((x1,x2),dim=0)
+x0 = torch.linspace(lower_0,upper_0,sample_size_0) + torch.tensor([noise_0])
+x1 = torch.linspace(lower_1,upper_1,sample_size_1) - torch.tensor([noise_1])
+X = torch.cat((x0,x1),dim=0)
 
-y = torch.cat( (torch.zeros(len(x1)),torch.ones(len(x2))), dim = 0)
+y = torch.cat( (torch.zeros(len(x0)),torch.ones(len(x1))), dim = 0)
 
 colors = ['orange' if i>0 else 'purple' for i in y]
 
@@ -31,12 +31,20 @@ colors = ['orange' if i>0 else 'purple' for i in y]
 def generate_plot(w):
 
 # plot the Dataset
-  scatter = go.Scatter(
-    x = X,
-    y = y,
+  scatter_class_0 = go.Scatter(
+    x = x0,
+    y = torch.zeros(len(x0)),
     mode = 'markers',
-    marker = dict(color=colors),
-    name = 'Dataset'
+    marker = dict(color='purple'),
+    name = 'class 0'
+    )
+  
+  scatter_class_1 = go.Scatter(
+    x = x1,
+    y = torch.ones(len(x1)),
+    mode = 'markers',
+    marker = dict(color='orange'),
+    name = 'class 1'
     )
 
 
@@ -50,7 +58,7 @@ def generate_plot(w):
       x = torch.linspace(-3,3,1000),
       y = torch.sigmoid(w*torch.linspace(-3,3,1000)),
       mode = 'lines',
-      line = dict(color='rgb(27,158,119)'),
+      line = {'color' : 'rgb(27,158,119)'},
       name = 'model'
   )
 
@@ -75,7 +83,7 @@ def generate_plot(w):
 
 
 
-  figure = go.Figure(data=[scatter, non_linear_line ],layout=layout)
+  figure = go.Figure(data=[scatter_class_0,scatter_class_1, non_linear_line ],layout=layout)
 
   return figure
 # ------------------------------------------------------
@@ -84,10 +92,13 @@ possible_weights = torch.linspace(-5,25,100)
 L= []
 loss_fn = nn.BCEWithLogitsLoss()
 
+
+
 for w in possible_weights:
   z = w * X
   loss = loss_fn(z,y)
   L.append(loss)
+  #-----------
 
 L = torch.as_tensor(L)
 secret_weight = possible_weights[torch.argmin(L)]
@@ -173,13 +184,16 @@ with container:
     with col1:
         figure_1 = generate_plot(w_val)
         st.plotly_chart(figure_1, use_container_width=True)  # Change aspect ratio to 1.0
-        st.latex(r'''\sigma = \frac{1}{1 + e^{-(\color{green}w\color{black}X)}}''')
-        st.latex(fr'''\sigma = \frac{{1}}{{1 + e^{{-(\color{{green}}{{{w_val}}}\color{{black}}X)}}}}''')
+        st.latex(r'''\hat{{y}} = \frac{1}{1 + e^{-(\color{green}w\color{black}X)}}''')
+        st.latex(fr'''\hat{{y}} = \frac{{1}}{{1 + e^{{-(\color{{green}}{{{w_val}}}\color{{black}}X)}}}}''')
 
 
 
     z = w_val*X
     loss = loss_fn(z,y)
+
+    loss_class_0 = torch.mean(-torch.log(1-torch.sigmoid(w_val*x0)))
+    loss_class_1 = torch.mean(-torch.log(torch.sigmoid(w_val*x1)))
 
 
 
@@ -189,7 +203,9 @@ with container:
        st.write('     ')
        st.write('     ')
        st.latex(r"""L = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]""")
-       st.latex(rf"""L = \textcolor{{red}}{{{loss:.4f}}}""")
+       st.latex(rf"""L_{{\text{{class 0}}}} = \textcolor{{purple}}{{{loss_class_0:.4f}}}""")
+       st.latex(rf"""L_{{\text{{class 1}}}} = \textcolor{{orange}}{{{loss_class_1:.4f}}}""")
+       st.latex(rf"""L_{{\text{{total}}}} = \textcolor{{red}}{{{loss:.4f}}}""")
 
 
 
