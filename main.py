@@ -56,14 +56,14 @@ def generate_plot(w):
 
   layout = go.Layout (
               xaxis = dict(
-                range = [-2,2],
+                range = [-1.5,1.5],
                 title = 'X',
                 zeroline = True,
                 zerolinewidth = 2,
                 zerolinecolor = 'rgba(205, 200, 193, 0.7)'
               ),
               yaxis = dict(
-                range = [-2,2],
+                range = [-0.5,1.5],
                 title = 'Y',
                 zeroline = True,
                 zerolinewidth = 2,
@@ -172,12 +172,25 @@ with container:
     # Plot figure_1 in the first column
     with col1:
         figure_1 = generate_plot(w_val)
-        st.plotly_chart(figure_1, use_container_width=True, aspect_ratio=5.0)  # Change aspect ratio to 1.0
+        st.plotly_chart(figure_1, use_container_width=True)  # Change aspect ratio to 1.0
         st.latex(r'''\sigma = \frac{1}{1 + e^{-(\color{green}w\color{black}X)}}''')
         st.latex(fr'''\sigma = \frac{{1}}{{1 + e^{{-(\color{{green}}{{{w_val}}}\color{{black}}X)}}}}''')
+
+
+
+    z = w_val*X
+    loss = loss_fn(z,y)
+
 
 
     with col2:
        figure_2 = loss_landscape(w_val)
        st.plotly_chart(figure_2,use_container_width=True)
+       st.write('     ')
+       st.write('     ')
+       st.latex(r"""L = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]""")
+       st.latex(rf"""L = \textcolor{{red}}{{{loss:.4f}}}""")
+
+
+
   
