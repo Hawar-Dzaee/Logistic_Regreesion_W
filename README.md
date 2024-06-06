@@ -64,8 +64,7 @@ Once the application is running, you will see two plots:
   * Displays Binary Cross Entropy (BCE) landscape.
 
 
-![Alt text](<Screen Shot 2024-06-06 at 10.10.52 AM.png>)
-
+![Alt text](<Screen Shot 2024-06-06 at 6.47.02 PM.png>)
 
 ## Requirements 
 
