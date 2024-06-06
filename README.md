@@ -2,7 +2,7 @@
 
 
 
-This web application visualizes a logistic regression model with one feature and its corresponding loss landscape. Users can interact with the model by adjusting weight **w1** using a widget, and observe how changes affect the loss function and help reach the global minima.
+This web application visualizes a logistic regression model with one feature and its corresponding loss landscape. Users can interact with the model by adjusting weight **w** using a widget, and observe how changes affect the loss function and help reach the global minima.
 
 
 ## Features
@@ -11,7 +11,7 @@ This web application visualizes a logistic regression model with one feature and
 
 * Loss Landscape Plot: Shows the Binary Cross Entropy Loss (BCE Loss) landscape for different values of weight.
 
-* Interactive Widgets: Adjust weight (w1) in real-time and see the effect on the loss function and  sigmoid curve.
+* Interactive Widgets: Adjust weight (w) in real-time and see the effect on the loss function and  sigmoid curve.
 
 * Equations Display: Displays the equations used in the plots:
       sigmoid: Used in the first plot.
