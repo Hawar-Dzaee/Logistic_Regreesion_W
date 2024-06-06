@@ -14,21 +14,26 @@ lower_1,upper_1 = 0,1
 sample_size_1 = 5
 noise_1 = 0.25
 
-secret_weight = torch.tensor(5.0)
+
 
 x0 = torch.linspace(lower_0,upper_0,sample_size_0) + torch.tensor([noise_0])
 x1 = torch.linspace(lower_1,upper_1,sample_size_1) - torch.tensor([noise_1])
+
 X = torch.cat((x0,x1),dim=0)
 
 y = torch.cat( (torch.zeros(len(x0)),torch.ones(len(x1))), dim = 0)
 
-colors = ['orange' if i>0 else 'purple' for i in y]
+# colors = ['orange' if i>0 else 'purple' for i in y]
+
 
 
 # --------------------------------
 # Generating Data 
 
 def generate_plot(w):
+
+
+
 
 # plot the Dataset
   scatter_class_0 = go.Scatter(
@@ -170,12 +175,12 @@ with st.sidebar:
     w_val = st.slider("weight (w):", min_value=-4.0, max_value=18.0, step=0.1, value= -3.5)
 
 
+
 container = st.container()
 
 
 with container:
  
-    # st.write("")  # Add an empty line to create space
 
     # Create two columns with different widths
     col1, col2 = st.columns([3,3])
@@ -206,6 +211,8 @@ with container:
        st.latex(rf"""L_{{\text{{class 0}}}} = \textcolor{{purple}}{{{loss_class_0:.4f}}}""")
        st.latex(rf"""L_{{\text{{class 1}}}} = \textcolor{{orange}}{{{loss_class_1:.4f}}}""")
        st.latex(rf"""L_{{\text{{total}}}} = \textcolor{{red}}{{{loss:.4f}}}""")
+       
+
 
 
 
