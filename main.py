@@ -33,8 +33,6 @@ y = torch.cat( (torch.zeros(len(x0)),torch.ones(len(x1))), dim = 0)
 def generate_plot(w):
 
 
-
-
 # plot the Dataset
   scatter_class_0 = go.Scatter(
     x = x0,
